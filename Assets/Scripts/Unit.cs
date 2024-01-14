@@ -53,11 +53,17 @@ public class Unit : MonoBehaviour {
         return GetTilePos();
     }
 
-    // public void Move(Vector3Int delta) {
-    //     transform.position = GetNextPos(delta);
-    // }
+    // Coroutine for smoothed movement
+    public IEnumerator MoveTo(Vector3Int location, float unitMoveTime) {
+        yield return null;
+        Vector3Int startPos = GetTilePos();
 
-    public void MoveTo(Vector3Int location) {
+        float t = 0;
+        while (t < unitMoveTime) {
+            transform.position = Vector3.Lerp(startPos, location, t / unitMoveTime);
+            yield return null;
+            t += Time.deltaTime;
+        }
         transform.position = location;
     }
 

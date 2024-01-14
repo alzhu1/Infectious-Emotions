@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class UnitManager : MonoBehaviour {
 
+    [SerializeField] private float unitMoveTime = 1f;
+
     private Dictionary<Vector3Int, Unit> playerUnits;
     private Dictionary<Vector3Int, Unit> npcUnits;
     private Unit mainPlayer;
@@ -11,6 +13,8 @@ public class UnitManager : MonoBehaviour {
     private bool horizontalPressed;
     private bool verticalPressed;
     private bool attacked;
+
+    private bool paused;
 
     void Awake() {
         playerUnits = new Dictionary<Vector3Int, Unit>();
@@ -31,6 +35,10 @@ public class UnitManager : MonoBehaviour {
     }
 
     void Update() {
+        if (paused) {
+            return;
+        }
+
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
 
@@ -97,20 +105,10 @@ public class UnitManager : MonoBehaviour {
 
         // Just to debug
         if (finalPositions.Count != totalUnitCount) {
-            Debug.LogWarning("Something is wrong with final position count not matching!");
+            Debug.LogWarning($"Final position count: {finalPositions.Count}, total unit count: {totalUnitCount}");
         }
 
-        foreach (var entry in finalPositions) {
-            Unit unit = entry.Value;
-            playerUnits.Remove(unit.GetTilePos());
-            unit.MoveTo(entry.Key);
-        }
-
-        foreach (Unit unit in finalPositions.Values) {
-            if (unit != mainPlayer) {
-                playerUnits.Add(unit.GetTilePos(), unit);
-            }
-        }
+        StartCoroutine(ProcessMoveAnimations(finalPositions));
     }
 
     void AttackWithMainPlayer(Vector3Int direction) {
@@ -130,5 +128,35 @@ public class UnitManager : MonoBehaviour {
         }
 
         attacked = true;
+    }
+
+    // https://www.reddit.com/r/Unity3D/comments/11imces/wait_for_all_coroutines_to_finish/
+    IEnumerator ProcessMoveAnimations(Dictionary<Vector3Int, Unit> finalPositions) {
+        paused = true;
+        int coroutineTally = 0;
+
+        foreach (var entry in finalPositions) {
+            Unit unit = entry.Value;
+            playerUnits.Remove(unit.GetTilePos());
+            StartCoroutine(RunAwaitedCoroutine(unit.MoveTo(entry.Key, unitMoveTime)));
+        }
+
+        while (coroutineTally > 0) {
+            yield return null;
+        }
+
+        foreach (Unit unit in finalPositions.Values) {
+            if (unit != mainPlayer) {
+                playerUnits.Add(unit.GetTilePos(), unit);
+            }
+        }
+
+        paused = false;
+
+        IEnumerator RunAwaitedCoroutine(IEnumerator coroutine) {
+            coroutineTally++;
+            yield return StartCoroutine(coroutine);
+            coroutineTally--;
+        }
     }
 }
