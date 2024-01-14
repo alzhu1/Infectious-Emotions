@@ -159,6 +159,7 @@ public class UnitManager : MonoBehaviour {
                 playerUnits.Add(unit.GetTilePos(), unit);
             }
         }
+        TilemapManager.instance.UpdateSwitchTiles(finalPositions);
 
         paused = false;
 

@@ -1,12 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 
 public class TilemapManager : MonoBehaviour {
     public static TilemapManager instance = null;
 
     [SerializeField] private Tilemap blockmap;
+    [SerializeField] private Tilemap switchmap;
+
+    // private Dictionary<Vector3Int, Tile> switchTiles;
+    private HashSet<Vector3Int> switchPositions;
 
     void Awake() {
         if (instance == null) {
@@ -16,6 +21,22 @@ public class TilemapManager : MonoBehaviour {
             Destroy(gameObject);
             return;
         }
+
+        // TileBase[] switchTiles = switchmap.GetTilesBlock(switchmap.cellBounds);
+        // foreach (TileBase tile in switchTiles) {
+        //     Debug.Log($"Tile: {tile},");
+        // }
+        // switchmap.SetTileFlags()
+        // switchTiles = new Dictionary<Vector3Int, Tile>();
+        switchPositions = new HashSet<Vector3Int>();
+        foreach (Vector3Int switchPos in switchmap.cellBounds.allPositionsWithin) {
+            Tile tile = switchmap.GetTile<Tile>(switchPos);
+            if (tile != null) {
+                switchmap.SetTileFlags(switchPos, TileFlags.None);
+                // switchTiles.Add(switchPos, tile);
+                switchPositions.Add(switchPos);
+            }
+        }
     }
 
     void Update() {
@@ -24,5 +45,19 @@ public class TilemapManager : MonoBehaviour {
 
     public bool IsTileBlocked(Vector3Int pos) {
         return blockmap.GetTile(pos) != null;
+    }
+
+    public void UpdateSwitchTiles(Dictionary<Vector3Int, Unit> unitPositions) {
+        bool allSwitchesPressed = true;
+        foreach (Vector3Int switchPos in switchPositions) {
+            bool switchPressed = unitPositions.ContainsKey(switchPos);
+            allSwitchesPressed &= switchPressed;
+            switchmap.SetColor(switchPos, switchPressed ? Color.green : Color.white);
+        }
+
+        // TODO: Move this to another script (set up event bus?)
+        if (allSwitchesPressed) {
+            SceneManager.LoadScene(0);
+        }
     }
 }
