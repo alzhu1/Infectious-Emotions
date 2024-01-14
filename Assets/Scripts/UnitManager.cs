@@ -87,7 +87,9 @@ public class UnitManager : MonoBehaviour {
             Unit unit = unitsToMove[i];
             Vector3Int nextPos = unit.GetNextPos(delta);
 
-            if (TilemapManager.instance.IsTileBlocked(nextPos) || finalPositions.ContainsKey(nextPos)) {
+            if (TilemapManager.instance.IsTileBlocked(nextPos) ||
+                finalPositions.ContainsKey(nextPos) ||
+                npcUnits.ContainsKey(nextPos)) {
                 // Blocked or occupied means this person cannot move
                 finalPositions.Add(unit.GetTilePos(), unit);
                 unitsToMove.RemoveAt(i);
