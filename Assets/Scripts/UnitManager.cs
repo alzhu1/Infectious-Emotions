@@ -5,6 +5,7 @@ using UnityEngine;
 public class UnitManager : MonoBehaviour {
 
     [SerializeField] private float unitMoveTime = 1f;
+    [SerializeField] private int attackRange = 2;
 
     private Dictionary<Vector3Int, Unit> playerUnits;
     private Dictionary<Vector3Int, Unit> npcUnits;
@@ -115,16 +116,24 @@ public class UnitManager : MonoBehaviour {
         Debug.Log($"Main player at {mainPlayer.GetTilePos()}, attacking direction {direction}");
 
         Vector3Int attackedPos = mainPlayer.GetTilePos() + direction;
-        if (playerUnits.ContainsKey(attackedPos)) {
-            Unit attackedUnit = playerUnits[attackedPos];
-            playerUnits.Remove(attackedPos);
-            Destroy(attackedUnit.gameObject);
-        } else if (npcUnits.ContainsKey(attackedPos)) {
-            Unit attackedUnit = npcUnits[attackedPos];
-            npcUnits.Remove(attackedPos);
-            playerUnits.Add(attackedPos, attackedUnit);
+        int range = 0;
 
-            attackedUnit.HandleAttacked();
+        while (range++ < attackRange) {
+            if (playerUnits.ContainsKey(attackedPos)) {
+                Unit attackedUnit = playerUnits[attackedPos];
+                playerUnits.Remove(attackedPos);
+                Destroy(attackedUnit.gameObject);
+                break;
+            } else if (npcUnits.ContainsKey(attackedPos)) {
+                Unit attackedUnit = npcUnits[attackedPos];
+                npcUnits.Remove(attackedPos);
+                playerUnits.Add(attackedPos, attackedUnit);
+
+                attackedUnit.HandleAttacked();
+                break;
+            } else {
+                attackedPos += direction;
+            }
         }
 
         attacked = true;
