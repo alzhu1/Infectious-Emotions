@@ -45,7 +45,7 @@ public class UnitManager : MonoBehaviour {
         } else {
             if (horizontal != 0 && !horizontalPressed) {
                 horizontalPressed = true;
-                MovePlayerUnits(new Vector3(Mathf.RoundToInt(horizontal), 0, 0));
+                MovePlayerUnits(new Vector3Int(Mathf.RoundToInt(horizontal), 0, 0));
             } else if (horizontal == 0) {
                 horizontalPressed = false;
             }
@@ -53,7 +53,7 @@ public class UnitManager : MonoBehaviour {
 
             if (vertical != 0 && !verticalPressed) {
                 verticalPressed = true;
-                MovePlayerUnits(new Vector3(0, Mathf.RoundToInt(vertical), 0));
+                MovePlayerUnits(new Vector3Int(0, Mathf.RoundToInt(vertical), 0));
             } else if (vertical == 0) {
                 verticalPressed = false;
             }
@@ -64,41 +64,52 @@ public class UnitManager : MonoBehaviour {
         }
     }
 
-    void MovePlayerUnits(Vector3 delta) {
-        List<Unit> playerUnitsToMove = new List<Unit>(playerUnits.Values);
+    void MovePlayerUnits(Vector3Int delta) {
+        List<Unit> unitsToMove = new List<Unit>(playerUnits.Values)
+        {
+            mainPlayer
+        };
+        Dictionary<Vector3Int, Unit> finalPositions = new Dictionary<Vector3Int, Unit>();
+        int totalUnitCount = unitsToMove.Count;
 
-        // Main player should always move correctly
-        mainPlayer.Move(delta);
+        // Algorithm to move units
+        HashSet<Unit> tempUnits = new HashSet<Unit>();
+        for (int i = 0; i < unitsToMove.Count; i++) {
+            Unit unit = unitsToMove[i];
+            Vector3Int nextPos = unit.GetNextPos(delta);
 
-        foreach (Unit playerUnit in playerUnitsToMove) {
-            playerUnits.Remove(playerUnit.GetTilePos());
-
-            switch (playerUnit.Type) {
-                case UnitType.PLAYER_LOVE: {
-                    // Love should mimic player movement
-                    playerUnit.Move(delta);
-                    break;
-                }
-
-                case UnitType.PLAYER_HATE: {
-                    // Hate should be the opposite
-                    playerUnit.Move(-delta);
-                    break;
-                }
-
-                case UnitType.PLAYER_ENVY: {
-                    // TODO: Fill this in, envy should have this player follow the mainPlayer
-                    Debug.Log("ENVY not added");
-                    break;
-                }
-
-                default: {
-                    Debug.LogWarning($"Unexpected unit type: {playerUnit.Type}");
-                    break;
-                }
+            if (TilemapManager.instance.IsTileBlocked(nextPos) || finalPositions.ContainsKey(nextPos)) {
+                // Blocked or occupied means this person cannot move
+                finalPositions.Add(unit.GetTilePos(), unit);
+                unitsToMove.RemoveAt(i);
+                i = -1;
+                tempUnits.Clear();
+                continue;
             }
 
-            playerUnits.Add(playerUnit.GetTilePos(), playerUnit);
+            // Otherwise, mark unit as temp
+            tempUnits.Add(unit);
+        }
+
+        foreach (Unit tempUnit in tempUnits) {
+            finalPositions.Add(tempUnit.GetNextPos(delta), tempUnit);
+        }
+
+        // Just to debug
+        if (finalPositions.Count != totalUnitCount) {
+            Debug.LogWarning("Something is wrong with final position count not matching!");
+        }
+
+        foreach (var entry in finalPositions) {
+            Unit unit = entry.Value;
+            playerUnits.Remove(unit.GetTilePos());
+            unit.MoveTo(entry.Key);
+        }
+
+        foreach (Unit unit in finalPositions.Values) {
+            if (unit != mainPlayer) {
+                playerUnits.Add(unit.GetTilePos(), unit);
+            }
         }
     }
 
