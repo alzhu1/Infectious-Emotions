@@ -10,7 +10,6 @@ public class TilemapManager : MonoBehaviour {
     [SerializeField] private Tilemap blockmap;
     [SerializeField] private Tilemap switchmap;
 
-    // private Dictionary<Vector3Int, Tile> switchTiles;
     private HashSet<Vector3Int> switchPositions;
 
     void Awake() {
@@ -22,25 +21,14 @@ public class TilemapManager : MonoBehaviour {
             return;
         }
 
-        // TileBase[] switchTiles = switchmap.GetTilesBlock(switchmap.cellBounds);
-        // foreach (TileBase tile in switchTiles) {
-        //     Debug.Log($"Tile: {tile},");
-        // }
-        // switchmap.SetTileFlags()
-        // switchTiles = new Dictionary<Vector3Int, Tile>();
         switchPositions = new HashSet<Vector3Int>();
         foreach (Vector3Int switchPos in switchmap.cellBounds.allPositionsWithin) {
             Tile tile = switchmap.GetTile<Tile>(switchPos);
             if (tile != null) {
                 switchmap.SetTileFlags(switchPos, TileFlags.None);
-                // switchTiles.Add(switchPos, tile);
                 switchPositions.Add(switchPos);
             }
         }
-    }
-
-    void Update() {
-        
     }
 
     public bool IsTileBlocked(Vector3Int pos) {
@@ -55,9 +43,8 @@ public class TilemapManager : MonoBehaviour {
             switchmap.SetColor(switchPos, switchPressed ? Color.green : Color.white);
         }
 
-        // TODO: Move this to another script (set up event bus?)
         if (allSwitchesPressed) {
-            SceneManager.LoadScene(0);
+            EventBus.instance.TriggerOnLevelComplete();
         }
     }
 }

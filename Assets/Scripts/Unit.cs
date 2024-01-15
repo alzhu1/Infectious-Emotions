@@ -10,17 +10,6 @@ public class Unit : MonoBehaviour {
         get { return type; }
     }
 
-    private bool horizontalPressed;
-    private bool verticalPressed;
-
-    void Start() {
-        
-    }
-
-    void Update() {
-
-    }
-
     public Vector3Int GetTilePos() {
         return Vector3Int.FloorToInt(transform.position);
     }
