@@ -120,6 +120,8 @@ public class UnitManager : MonoBehaviour {
         Vector3Int attackedPos = mainPlayer.GetTilePos() + direction;
         int range = 0;
 
+        // TODO: Animate this (use arrow)
+
         while (range++ < attackRange) {
             if (playerUnits.ContainsKey(attackedPos)) {
                 Unit attackedUnit = playerUnits[attackedPos];
