@@ -7,6 +7,9 @@ public class UnitManager : MonoBehaviour {
     [SerializeField] private float unitMoveTime = 1f;
     [SerializeField] private int attackRange = 2;
 
+    // Object pooled arrow
+    [SerializeField] private Arrow arrow;
+
     private Dictionary<Vector3Int, Unit> playerUnits;
     private Dictionary<Vector3Int, Unit> npcUnits;
     private Unit mainPlayer;
@@ -59,8 +62,7 @@ public class UnitManager : MonoBehaviour {
                 horizontalPressed = false;
             }
 
-
-            if (vertical != 0 && !verticalPressed) {
+            if (!horizontalPressed && vertical != 0 && !verticalPressed) {
                 verticalPressed = true;
                 MovePlayerUnits(new Vector3Int(0, Mathf.RoundToInt(vertical), 0));
             } else if (vertical == 0) {
@@ -117,30 +119,7 @@ public class UnitManager : MonoBehaviour {
     void AttackWithMainPlayer(Vector3Int direction) {
         Debug.Log($"Main player at {mainPlayer.GetTilePos()}, attacking direction {direction}");
 
-        Vector3Int attackedPos = mainPlayer.GetTilePos() + direction;
-        int range = 0;
-
-        // TODO: Animate this (use arrow)
-
-        while (range++ < attackRange) {
-            if (playerUnits.ContainsKey(attackedPos)) {
-                Unit attackedUnit = playerUnits[attackedPos];
-                playerUnits.Remove(attackedPos);
-                Destroy(attackedUnit.gameObject);
-                break;
-            } else if (npcUnits.ContainsKey(attackedPos)) {
-                Unit attackedUnit = npcUnits[attackedPos];
-                npcUnits.Remove(attackedPos);
-                playerUnits.Add(attackedPos, attackedUnit);
-
-                attackedUnit.HandleAttacked();
-                break;
-            } else {
-                attackedPos += direction;
-            }
-        }
-
-        attacked = true;
+        StartCoroutine(ProcessAttack(direction));
     }
 
     // https://www.reddit.com/r/Unity3D/comments/11imces/wait_for_all_coroutines_to_finish/
@@ -172,5 +151,42 @@ public class UnitManager : MonoBehaviour {
             yield return StartCoroutine(coroutine);
             coroutineTally--;
         }
+    }
+
+    IEnumerator ProcessAttack(Vector3Int direction) {
+        paused = true;
+        yield return null;
+
+        Vector3Int attackedPos = mainPlayer.GetTilePos() + direction;
+        int range = 0;
+
+        GameObject toDestroy = null;
+
+        while (range++ < attackRange) {
+            if (playerUnits.ContainsKey(attackedPos)) {
+                Unit attackedUnit = playerUnits[attackedPos];
+                playerUnits.Remove(attackedPos);
+                toDestroy = attackedUnit.gameObject;
+                break;
+            } else if (npcUnits.ContainsKey(attackedPos)) {
+                Unit attackedUnit = npcUnits[attackedPos];
+                npcUnits.Remove(attackedPos);
+                playerUnits.Add(attackedPos, attackedUnit);
+                attackedUnit.HandleAttacked();
+                break;
+            } else {
+                attackedPos += direction;
+            }
+        }
+
+        // Need to animate arrow going from mainPlayer.GetTilePos() to attackedPos
+        yield return StartCoroutine(arrow.Travel(mainPlayer.GetTilePos(), direction, attackRange, range));
+
+        if (toDestroy != null) {
+            Destroy(toDestroy);
+        }
+
+        attacked = true;
+        paused = false;
     }
 }
