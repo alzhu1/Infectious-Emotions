@@ -10,6 +10,8 @@ public class TilemapManager : MonoBehaviour {
     [SerializeField] private Tilemap blockmap;
     [SerializeField] private Tilemap switchmap;
 
+    [SerializeField] private Tile arrowBlocker;
+
     private HashSet<Vector3Int> switchPositions;
 
     void Awake() {
@@ -31,8 +33,12 @@ public class TilemapManager : MonoBehaviour {
         }
     }
 
-    public bool IsTileBlocked(Vector3Int pos) {
-        return blockmap.GetTile(pos) != null;
+    public bool IsTileBlocked(Vector3Int pos, bool attacking = false) {
+        TileBase tile = blockmap.GetTile(pos);
+        if (attacking) {
+            return tile != null && tile == arrowBlocker;
+        }
+        return tile != null;
     }
 
     public void UpdateSwitchTiles(Dictionary<Vector3Int, Unit> unitPositions) {

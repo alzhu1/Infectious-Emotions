@@ -163,20 +163,26 @@ public class UnitManager : MonoBehaviour {
         GameObject toDestroy = null;
 
         while (range++ < attackRange) {
+            if (TilemapManager.instance.IsTileBlocked(attackedPos, true)) {
+                break;
+            }
+
             if (playerUnits.ContainsKey(attackedPos)) {
                 Unit attackedUnit = playerUnits[attackedPos];
                 playerUnits.Remove(attackedPos);
                 toDestroy = attackedUnit.gameObject;
                 break;
-            } else if (npcUnits.ContainsKey(attackedPos)) {
+            }
+
+            if (npcUnits.ContainsKey(attackedPos)) {
                 Unit attackedUnit = npcUnits[attackedPos];
                 npcUnits.Remove(attackedPos);
                 playerUnits.Add(attackedPos, attackedUnit);
                 attackedUnit.HandleAttacked();
                 break;
-            } else {
-                attackedPos += direction;
             }
+
+            attackedPos += direction;
         }
 
         // Need to animate arrow going from mainPlayer.GetTilePos() to attackedPos
