@@ -133,6 +133,8 @@ public class UnitManager : MonoBehaviour {
         paused = true;
         int coroutineTally = 0;
 
+        EventBus.instance.TriggerOnStep();
+
         foreach (var entry in finalPositions) {
             Unit unit = entry.Value;
             playerUnits.Remove(unit.GetTilePos());
@@ -168,15 +170,20 @@ public class UnitManager : MonoBehaviour {
 
         GameObject toDestroy = null;
 
+        bool hitWall = false;
         while (range++ < attackRange) {
             if (tilemapManager.IsTileBlocked(attackedPos, true)) {
+                Debug.Log($"Hitting wall at {attackedPos}");
+                hitWall = true;
                 break;
             }
 
+            // Disable killing player units
             if (playerUnits.ContainsKey(attackedPos)) {
-                Unit attackedUnit = playerUnits[attackedPos];
-                playerUnits.Remove(attackedPos);
-                toDestroy = attackedUnit.gameObject;
+                // Unit attackedUnit = playerUnits[attackedPos];
+                // playerUnits.Remove(attackedPos);
+                // toDestroy = attackedUnit.gameObject;
+                hitWall = true;
                 break;
             }
 
@@ -191,8 +198,14 @@ public class UnitManager : MonoBehaviour {
             attackedPos += direction;
         }
 
+        EventBus.instance.TriggerOnArrowShoot();
+
         // Need to animate arrow going from mainPlayer.GetTilePos() to attackedPos
         yield return StartCoroutine(arrow.Travel(mainPlayer.GetTilePos(), direction, attackRange, range));
+
+        if (range <= attackRange) {
+            EventBus.instance.TriggerOnArrowHit(hitWall);
+        }
 
         if (toDestroy != null) {
             Destroy(toDestroy);

@@ -51,19 +51,19 @@ public class AudioSystem : MonoBehaviour {
     }
 
     void Start() {
-        // Attach events
-        // EventBus.instance.OnLevelStart += ReceiveLevelStartEvent;
-        // EventBus.instance.OnLevelFail += ReceiveLevelFailEvent;
-        // EventBus.instance.OnLevelComplete += ReceiveLevelCompleteEvent;
-        // EventBus.instance.OnJump += ReceiveJumpEvent;
+        EventBus.instance.OnLevelComplete += ReceiveLevelCompleteEvent;
+        EventBus.instance.OnLevelRestart += ReceiveLevelRestartEvent;
+        EventBus.instance.OnStep += ReceiveStepEvent;
+        EventBus.instance.OnArrowShoot += ReceiveArrowShootEvent;
+        EventBus.instance.OnArrowHit += ReceiveArrowHitEvent;
     }
 
     void OnDestroy() {
-        // Detach events
-        // EventBus.instance.OnLevelStart -= ReceiveLevelStartEvent;
-        // EventBus.instance.OnLevelFail -= ReceiveLevelFailEvent;
-        // EventBus.instance.OnLevelComplete -= ReceiveLevelCompleteEvent;
-        // EventBus.instance.OnJump -= ReceiveJumpEvent;
+        EventBus.instance.OnLevelComplete -= ReceiveLevelCompleteEvent;
+        EventBus.instance.OnLevelRestart -= ReceiveLevelRestartEvent;
+        EventBus.instance.OnStep -= ReceiveStepEvent;
+        EventBus.instance.OnArrowShoot -= ReceiveArrowShootEvent;
+        EventBus.instance.OnArrowHit -= ReceiveArrowHitEvent;
     }
 
     Sound Play(string name) {
@@ -76,19 +76,27 @@ public class AudioSystem : MonoBehaviour {
         return s;
     }
 
-    // void ReceiveLevelStartEvent(int levelIndex) {
-    //     Play("LevelStart");
-    // }
+    void ReceiveLevelCompleteEvent() {
+        Play("LevelComplete");
+    }
 
-    // void ReceiveLevelFailEvent() {
-    //     Play("LevelFail");
-    // }
+    void ReceiveLevelRestartEvent() {
+        Play("LevelRestart");
+    }
 
-    // void ReceiveLevelCompleteEvent() {
-    //     Play("LevelComplete");
-    // }
+    void ReceiveStepEvent() {
+        Play("Step");
+    }
 
-    // void ReceiveJumpEvent(int numJumpsLeft) {
-    //     Play("Jump");
-    // }
+    void ReceiveArrowShootEvent() {
+        Play("ArrowShoot");
+    }
+
+    void ReceiveArrowHitEvent(bool hitWall) {
+        if (hitWall) {
+            Play("ArrowHitWall");
+        } else {
+            Play("ArrowHitPerson");
+        }
+    }
 }

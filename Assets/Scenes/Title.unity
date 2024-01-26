@@ -599,7 +599,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockmap: {fileID: 1407931326}
   switchmap: {fileID: 2026916446}
-  arrowBlocker: {fileID: 11400000, guid: 823b74367a76943529b29a52c3b977f7, type: 2}
+  arrowBlockmapPass: {fileID: 11400000, guid: 536699a9b4e314d40ab388dbffde6a81, type: 2}
 --- !u!1 &961912417
 GameObject:
   m_ObjectHideFlags: 0
@@ -632,8 +632,44 @@ MonoBehaviour:
   sounds:
   - name: BGM
     clip: {fileID: 8300000, guid: 70218c85b087141cdb995de518256997, type: 3}
-    volume: 1
+    volume: 0.65
     loop: 1
+    pitch: 1
+    source: {fileID: 0}
+  - name: LevelComplete
+    clip: {fileID: 8300000, guid: b00c61335ea364218a49c8a25e4ae257, type: 3}
+    volume: 0.25
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - name: LevelRestart
+    clip: {fileID: 8300000, guid: 7f7de605dee6a414e934fc378d41a37c, type: 3}
+    volume: 0.25
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - name: Step
+    clip: {fileID: 8300000, guid: f52adc3911d26434da333994e860f8a0, type: 3}
+    volume: 0.3
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - name: ArrowShoot
+    clip: {fileID: 8300000, guid: afced0003945d49ad810017e7811dbb9, type: 3}
+    volume: 0.8
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - name: ArrowHitWall
+    clip: {fileID: 8300000, guid: bc066c0904aa8483f91a6ccf9c9a1ec7, type: 3}
+    volume: 0.8
+    loop: 0
+    pitch: 1
+    source: {fileID: 0}
+  - name: ArrowHitPerson
+    clip: {fileID: 8300000, guid: a9949e6559f214099ab18c94956d136b, type: 3}
+    volume: 0.8
+    loop: 0
     pitch: 1
     source: {fileID: 0}
 --- !u!4 &961912419

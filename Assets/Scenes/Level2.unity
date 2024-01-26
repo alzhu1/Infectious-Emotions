@@ -520,7 +520,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockmap: {fileID: 1407931326}
   switchmap: {fileID: 2026916446}
-  arrowBlocker: {fileID: 11400000, guid: 823b74367a76943529b29a52c3b977f7, type: 2}
+  arrowBlockmapPass: {fileID: 11400000, guid: 536699a9b4e314d40ab388dbffde6a81, type: 2}
 --- !u!1 &961912417
 GameObject:
   m_ObjectHideFlags: 0

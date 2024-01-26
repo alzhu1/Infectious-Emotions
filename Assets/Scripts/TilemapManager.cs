@@ -10,7 +10,7 @@ public class TilemapManager : MonoBehaviour {
     [SerializeField] private Tilemap blockmap;
     [SerializeField] private Tilemap switchmap;
 
-    [SerializeField] private Tile arrowBlocker;
+    [SerializeField] private Tile arrowBlockmapPass;
 
     private HashSet<Vector3Int> switchPositions;
 
@@ -28,7 +28,7 @@ public class TilemapManager : MonoBehaviour {
     public bool IsTileBlocked(Vector3Int pos, bool attacking = false) {
         TileBase tile = blockmap.GetTile(pos);
         if (attacking) {
-            return tile != null && tile == arrowBlocker;
+            return tile != null && tile != arrowBlockmapPass;
         }
         return tile != null;
     }
