@@ -8,6 +8,7 @@ public class EventBus : MonoBehaviour {
 
     public event Action OnLevelStart = delegate {};
     public event Action OnLevelComplete = delegate {};
+    public event Action OnLevelRestart = delegate {};
 
     void Awake() {
         if (instance == null) {
@@ -26,5 +27,9 @@ public class EventBus : MonoBehaviour {
 
     public void TriggerOnLevelComplete() {
         OnLevelComplete?.Invoke();
+    }
+
+    public void TriggerOnLevelRestart() {
+        OnLevelRestart?.Invoke();
     }
 }

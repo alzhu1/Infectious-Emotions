@@ -20,6 +20,10 @@ public class LevelManager : MonoBehaviour {
         return SceneManager.GetActiveScene().buildIndex == 0;
     }
 
+    public void ReloadLevel() {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
     public void LoadNextLevel() {
         int buildIndex = SceneManager.GetActiveScene().buildIndex;
         SceneManager.LoadScene((buildIndex + 1) % SceneManager.sceneCountInBuildSettings);

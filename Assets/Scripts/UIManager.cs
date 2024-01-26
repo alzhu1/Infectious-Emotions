@@ -27,30 +27,36 @@ public class UIManager : MonoBehaviour {
     void Start() {
         EventBus.instance.OnLevelStart += ReceiveLevelStartEvent;
         EventBus.instance.OnLevelComplete += ReceiveLevelCompleteEvent;
+        EventBus.instance.OnLevelRestart += ReceiveLevelRestartEvent;
     }
 
     void OnDestroy() {
         EventBus.instance.OnLevelStart -= ReceiveLevelStartEvent;
         EventBus.instance.OnLevelComplete -= ReceiveLevelCompleteEvent;
+        EventBus.instance.OnLevelRestart -= ReceiveLevelRestartEvent;
     }
 
     void ReceiveLevelStartEvent() {
-        StartCoroutine(Transition(false));
+        StartCoroutine(Transition(false, false));
     }
 
     void ReceiveLevelCompleteEvent() {
-        StartCoroutine(Transition(true));
+        StartCoroutine(Transition(true, false));
     }
 
-    IEnumerator Transition(bool levelComplete) {
+    void ReceiveLevelRestartEvent() {
+        StartCoroutine(Transition(false, true));
+    }
+
+    IEnumerator Transition(bool levelComplete, bool levelRestart) {
         if (LevelManager.instance.IsTitle()) {
             foreach (Text text in texts) {
                 text.gameObject.SetActive(true);
             }
         }
 
-        Color startColor = levelComplete ? Color.clear : Color.black;
-        Color endColor = levelComplete ? Color.black : Color.clear;
+        Color startColor = (levelComplete || levelRestart) ? Color.clear : Color.black;
+        Color endColor = (levelComplete || levelRestart) ? Color.black : Color.clear;
 
         float t = 0;
         while (t < transitionTime) {
@@ -61,7 +67,9 @@ public class UIManager : MonoBehaviour {
 
         transitionImage.color = endColor;
 
-        if (levelComplete) {
+        if (levelRestart) {
+            LevelManager.instance.ReloadLevel();
+        } else if (levelComplete) {
             if (LevelManager.instance.IsTitle()) {
                 foreach (Text text in texts) {
                     text.gameObject.SetActive(false);

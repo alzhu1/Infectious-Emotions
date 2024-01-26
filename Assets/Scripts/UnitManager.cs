@@ -18,7 +18,6 @@ public class UnitManager : MonoBehaviour {
 
     private bool horizontalPressed;
     private bool verticalPressed;
-    private bool attacked;
 
     private bool paused;
     private bool levelComplete;
@@ -48,6 +47,12 @@ public class UnitManager : MonoBehaviour {
             return;
         }
 
+        if (Input.GetButtonDown("Restart")) {
+            levelComplete = true;
+            EventBus.instance.TriggerOnLevelRestart();
+            return;
+        }
+
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
 
@@ -74,10 +79,6 @@ public class UnitManager : MonoBehaviour {
                 verticalPressed = false;
             }
         }
-
-        // if (!Input.GetButton("AttackMode")) {
-        //     attacked = false;
-        // }
     }
 
     void MovePlayerUnits(Vector3Int delta) {
@@ -197,7 +198,6 @@ public class UnitManager : MonoBehaviour {
             Destroy(toDestroy);
         }
 
-        attacked = true;
         paused = false;
     }
 }

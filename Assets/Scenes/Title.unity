@@ -2384,10 +2384,10 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: aea26627fde994c54afecfa405b3b7fe, type: 3}
-    m_FontSize: 40
+    m_FontSize: 36
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 4
+    m_MinSize: 3
     m_MaxSize: 58
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -2397,7 +2397,10 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 'WASD/Arrow Keys to Move
 
-    Hold Space + Direction to Attack'
+    Hold Space + Direction to Attack
+
+    R to
+    Restart'
 --- !u!222 &1882888694
 CanvasRenderer:
   m_ObjectHideFlags: 0
