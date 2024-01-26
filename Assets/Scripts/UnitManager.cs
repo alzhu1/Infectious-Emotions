@@ -51,7 +51,7 @@ public class UnitManager : MonoBehaviour {
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
 
-        if (!attacked && Input.GetButton("AttackMode")) {
+        if (Input.GetButton("AttackMode")) {
             if (horizontal > 0) { AttackWithMainPlayer(Vector3Int.right); }
             else if (horizontal < 0) { AttackWithMainPlayer(Vector3Int.left); }
             else if (vertical > 0) { AttackWithMainPlayer(Vector3Int.up); }
@@ -75,9 +75,9 @@ public class UnitManager : MonoBehaviour {
             }
         }
 
-        if (!Input.GetButton("AttackMode")) {
-            attacked = false;
-        }
+        // if (!Input.GetButton("AttackMode")) {
+        //     attacked = false;
+        // }
     }
 
     void MovePlayerUnits(Vector3Int delta) {
