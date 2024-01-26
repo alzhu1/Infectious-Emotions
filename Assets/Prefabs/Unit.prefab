@@ -98,3 +98,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
+  mainPlayerSprite: {fileID: 21300000, guid: 0303d977e098d4c958b24129cc8e93a2, type: 3}

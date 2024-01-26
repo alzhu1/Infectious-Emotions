@@ -5,9 +5,16 @@ using UnityEngine;
 public class Unit : MonoBehaviour {
 
     [SerializeField] private UnitType type;
+    [SerializeField] private Sprite mainPlayerSprite;
 
     public UnitType Type {
         get { return type; }
+    }
+
+    void Awake() {
+        if (type == UnitType.PLAYER_MAIN) {
+            GetComponent<SpriteRenderer>().sprite = mainPlayerSprite;
+        }
     }
 
     public Vector3Int GetTilePos() {

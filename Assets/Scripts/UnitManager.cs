@@ -10,6 +10,8 @@ public class UnitManager : MonoBehaviour {
     // Object pooled arrow
     [SerializeField] private Arrow arrow;
 
+    private TilemapManager tilemapManager;
+
     private Dictionary<Vector3Int, Unit> playerUnits;
     private Dictionary<Vector3Int, Unit> npcUnits;
     private Unit mainPlayer;
@@ -19,8 +21,11 @@ public class UnitManager : MonoBehaviour {
     private bool attacked;
 
     private bool paused;
+    private bool levelComplete;
 
     void Awake() {
+        tilemapManager = FindObjectOfType<TilemapManager>();
+
         playerUnits = new Dictionary<Vector3Int, Unit>();
         npcUnits = new Dictionary<Vector3Int, Unit>();
 
@@ -39,7 +44,7 @@ public class UnitManager : MonoBehaviour {
     }
 
     void Update() {
-        if (paused) {
+        if (paused || levelComplete) {
             return;
         }
 
@@ -89,7 +94,7 @@ public class UnitManager : MonoBehaviour {
             Unit unit = unitsToMove[i];
             Vector3Int nextPos = unit.GetNextPos(delta);
 
-            if (TilemapManager.instance.IsTileBlocked(nextPos) ||
+            if (tilemapManager.IsTileBlocked(nextPos) ||
                 finalPositions.ContainsKey(nextPos) ||
                 npcUnits.ContainsKey(nextPos)) {
                 // Blocked or occupied means this person cannot move
@@ -142,7 +147,7 @@ public class UnitManager : MonoBehaviour {
                 playerUnits.Add(unit.GetTilePos(), unit);
             }
         }
-        TilemapManager.instance.UpdateSwitchTiles(finalPositions);
+        levelComplete = tilemapManager.UpdateSwitchTiles(finalPositions);
 
         paused = false;
 
@@ -163,7 +168,7 @@ public class UnitManager : MonoBehaviour {
         GameObject toDestroy = null;
 
         while (range++ < attackRange) {
-            if (TilemapManager.instance.IsTileBlocked(attackedPos, true)) {
+            if (tilemapManager.IsTileBlocked(attackedPos, true)) {
                 break;
             }
 

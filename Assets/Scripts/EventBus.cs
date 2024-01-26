@@ -6,6 +6,7 @@ using UnityEngine;
 public class EventBus : MonoBehaviour {
     public static EventBus instance = null;
 
+    public event Action OnLevelStart = delegate {};
     public event Action OnLevelComplete = delegate {};
 
     void Awake() {
@@ -13,9 +14,14 @@ public class EventBus : MonoBehaviour {
             instance = this;
             DontDestroyOnLoad(gameObject);
         } else {
+            instance.TriggerOnLevelStart();
             Destroy(gameObject);
             return;
         }
+    }
+
+    public void TriggerOnLevelStart() {
+        OnLevelStart?.Invoke();
     }
 
     public void TriggerOnLevelComplete() {

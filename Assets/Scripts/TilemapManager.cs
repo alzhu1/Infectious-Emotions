@@ -15,14 +15,6 @@ public class TilemapManager : MonoBehaviour {
     private HashSet<Vector3Int> switchPositions;
 
     void Awake() {
-        if (instance == null) {
-            instance = this;
-            // TODO: Do I want DontDestroyOnLoad here?
-        } else {
-            Destroy(gameObject);
-            return;
-        }
-
         switchPositions = new HashSet<Vector3Int>();
         foreach (Vector3Int switchPos in switchmap.cellBounds.allPositionsWithin) {
             Tile tile = switchmap.GetTile<Tile>(switchPos);
@@ -41,7 +33,7 @@ public class TilemapManager : MonoBehaviour {
         return tile != null;
     }
 
-    public void UpdateSwitchTiles(Dictionary<Vector3Int, Unit> unitPositions) {
+    public bool UpdateSwitchTiles(Dictionary<Vector3Int, Unit> unitPositions) {
         bool allSwitchesPressed = true;
         foreach (Vector3Int switchPos in switchPositions) {
             bool switchPressed = unitPositions.ContainsKey(switchPos);
@@ -52,5 +44,7 @@ public class TilemapManager : MonoBehaviour {
         if (allSwitchesPressed) {
             EventBus.instance.TriggerOnLevelComplete();
         }
+
+        return allSwitchesPressed;
     }
 }

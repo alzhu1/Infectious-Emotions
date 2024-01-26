@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour {
-    private static LevelManager instance = null;
+    public static LevelManager instance = null;
 
     void Awake() {
         if (instance == null) {
@@ -16,15 +16,11 @@ public class LevelManager : MonoBehaviour {
         }
     }
 
-    void Start() {
-        EventBus.instance.OnLevelComplete += ReceiveLevelCompleteEvent;
+    public bool IsTitle() {
+        return SceneManager.GetActiveScene().buildIndex == 0;
     }
 
-    void OnDestroy() {
-        EventBus.instance.OnLevelComplete -= ReceiveLevelCompleteEvent;
-    }
-
-    void ReceiveLevelCompleteEvent() {
+    public void LoadNextLevel() {
         int buildIndex = SceneManager.GetActiveScene().buildIndex;
         SceneManager.LoadScene((buildIndex + 1) % SceneManager.sceneCountInBuildSettings);
     }
